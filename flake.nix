@@ -1,5 +1,5 @@
 {
-  description = "A Template for Haskell Packages";
+  description = "Conditionally running IO actions based on environment variables";
   inputs.nixpkgs.url = "github:nixos/nixpkgs?rev=98000933d72a97632caf0db0027ea3eb2e5e7f29";
   inputs.flake-utils.url = "github:numtide/flake-utils";
   outputs =

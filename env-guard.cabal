@@ -9,9 +9,15 @@ author:             Thomas Bidne
 maintainer:         tbidne@prontonmail.com
 homepage:           https://github.com/tbidne/env-guard/
 bug-reports:        https://github.com/tbidne/env-guard/issues
-synopsis:           Template
-description:        Template
-category:           Template
+synopsis:
+  Conditionally running IO actions based on environment variables.
+
+description:
+  This package provides functions for validating presence / contents of
+  environment variables, and conditionally running IO actions based on the
+  result.
+
+category:           System, Environment
 extra-source-files:
   CHANGELOG.md
   README.md
@@ -20,54 +26,8 @@ source-repository head
   type:     git
   location: https://github.com/tbidne/env-guard
 
-common common-exts
-  default-extensions:
-    BangPatterns
-    ConstraintKinds
-    DataKinds
-    DeriveDataTypeable
-    DeriveFunctor
-    DeriveGeneric
-    DeriveTraversable
-    DerivingStrategies
-    DerivingVia
-    FlexibleContexts
-    FlexibleInstances
-    FunctionalDependencies
-    GADTs
-    GeneralizedNewtypeDeriving
-    ImportQualifiedPost
-    InstanceSigs
-    LambdaCase
-    MultiParamTypeClasses
-    MultiWayIf
-    NamedFieldPuns
-    NumericUnderscores
-    OverloadedStrings
-    PatternSynonyms
-    RankNTypes
-    ScopedTypeVariables
-    StandaloneDeriving
-    StandaloneKindSignatures
-    TupleSections
-    TypeApplications
-    TypeFamilyDependencies
-    TypeOperators
-
 library
-  import:           common-exts
-  exposed-modules:  Lib
+  exposed-modules:  System.Environment.Guard
   build-depends:    base >=4.14.0.0 && <4.17
   hs-source-dirs:   src
-  default-language: Haskell2010
-
-executable env-guard
-  import:           common-exts
-  main-is:          Main.hs
-  build-depends:
-    , base
-    , env-guard
-
-  hs-source-dirs:   app
-  ghc-options:      -threaded -with-rtsopts=-N
   default-language: Haskell2010
