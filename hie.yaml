@@ -1,0 +1,7 @@
+cradle:
+  cabal:
+    - path: "./src"
+      component: "lib:env-guard"
+
+    - path: "./app/Main.hs"
+      component: "env-guard:exe:env-guard"
