@@ -21,7 +21,11 @@ where
 
 import Control.Monad (void)
 import Data.Char (toLower)
+import Data.Functor (($>))
 import System.Environment (lookupEnv)
+
+-- $setup
+-- >>> import System.Environment (setEnv)
 
 -- | @'guardSet' var io@ runs @io@ iff
 --
@@ -30,6 +34,17 @@ import System.Environment (lookupEnv)
 -- @
 -- 'guardSet' var === 'guardPredicate' var ('const' 'True')
 -- @
+--
+-- ==== __Examples__
+--
+-- >>> guardSet "NOT_SET" (putStrLn "ran io" $> True)
+-- *** IO action guarded by NOT_SET not run ***
+-- Nothing
+--
+-- >>> setEnv "SET" "foo"
+-- >>> guardSet "SET" (putStrLn "ran io" $> True)
+-- ran io
+-- Just True
 --
 -- @since 0.1
 guardSet :: String -> IO a -> IO (Maybe a)
@@ -49,6 +64,22 @@ guardSet_ var = void . guardSet var
 -- @
 -- 'guardExpected' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'toLower' a == 'fmap' 'toLower' b)
 -- @
+--
+-- ==== __Examples__
+--
+-- >>> guardExpected "NOT_SET" "val" (putStrLn "ran io" $> True)
+-- *** IO action guarded by NOT_SET not run ***
+-- Nothing
+--
+-- >>> setEnv "WRONG_VAL" "good_val"
+-- >>> guardExpected "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
+-- *** IO action guarded by WRONG_VAL not run ***
+-- Nothing
+--
+-- >>> setEnv "WILL_RUN" "val"
+-- >>> guardExpected "WILL_RUN" "VAL" (putStrLn "ran io" $> True)
+-- ran io
+-- Just True
 --
 -- @since 0.1
 guardExpected :: String -> String -> IO a -> IO (Maybe a)
@@ -72,13 +103,31 @@ guardPredicate_ var p = void . guardPredicate var p
 -- 1. The environment variable @var@ is set.
 -- 2. @var@'s value satisfies predicate @p@.
 --
+-- ==== __Examples__
+--
+-- >>> guardPredicate "NOT_SET" (const True) (putStrLn "ran io" $> True)
+-- *** IO action guarded by NOT_SET not run ***
+-- Nothing
+--
+-- >>> setEnv "CASE_WRONG" "VAL"
+-- >>> guardPredicate "CASE_WRONG" (== "val") (putStrLn "ran io" $> True)
+-- *** IO action guarded by CASE_WRONG not run ***
+-- Nothing
+--
+-- >>> setEnv "WILL_RUN" "VAL"
+-- >>> guardPredicate "WILL_RUN" (== "VAL") (putStrLn "ran io" $> True)
+-- ran io
+-- Just True
+--
 -- @since 0.1
 guardPredicate :: String -> (String -> Bool) -> IO a -> IO (Maybe a)
 guardPredicate var p io =
   lookupEnv var
     >>= \case
       Just result | p result -> Just <$> io
-      _ -> pure Nothing
+      _ ->
+        putStrLn ("*** IO action guarded by " <> var <> " not run ***")
+          $> Nothing
 
 eqCaseInsensitive :: String -> String -> Bool
 eqCaseInsensitive a b = fmap toLower a == fmap toLower b
