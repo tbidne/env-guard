@@ -21,10 +21,10 @@ where
 
 import Control.Monad (void)
 import Data.Char (toLower)
-import Data.Functor (($>))
 import System.Environment (lookupEnv)
 
 -- $setup
+-- >>> import Data.Functor (($>))
 -- >>> import System.Environment (setEnv)
 
 -- | @'guardSet' var io@ runs @io@ iff
@@ -38,7 +38,6 @@ import System.Environment (lookupEnv)
 -- ==== __Examples__
 --
 -- >>> guardSet "NOT_SET" (putStrLn "ran io" $> True)
--- *** IO action guarded by NOT_SET not run ***
 -- Nothing
 --
 -- >>> setEnv "SET" "foo"
@@ -68,12 +67,10 @@ guardSet_ var = void . guardSet var
 -- ==== __Examples__
 --
 -- >>> guardExpected "NOT_SET" "val" (putStrLn "ran io" $> True)
--- *** IO action guarded by NOT_SET not run ***
 -- Nothing
 --
 -- >>> setEnv "WRONG_VAL" "good_val"
 -- >>> guardExpected "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
--- *** IO action guarded by WRONG_VAL not run ***
 -- Nothing
 --
 -- >>> setEnv "WILL_RUN" "val"
@@ -106,12 +103,10 @@ guardPredicate_ var p = void . guardPredicate var p
 -- ==== __Examples__
 --
 -- >>> guardPredicate "NOT_SET" (const True) (putStrLn "ran io" $> True)
--- *** IO action guarded by NOT_SET not run ***
 -- Nothing
 --
 -- >>> setEnv "CASE_WRONG" "VAL"
 -- >>> guardPredicate "CASE_WRONG" (== "val") (putStrLn "ran io" $> True)
--- *** IO action guarded by CASE_WRONG not run ***
 -- Nothing
 --
 -- >>> setEnv "WILL_RUN" "VAL"
@@ -125,9 +120,7 @@ guardPredicate var p io =
   lookupEnv var
     >>= \case
       Just result | p result -> Just <$> io
-      _ ->
-        putStrLn ("*** IO action guarded by " <> var <> " not run ***")
-          $> Nothing
+      _ -> pure Nothing
 
 eqCaseInsensitive :: String -> String -> Bool
 eqCaseInsensitive a b = fmap toLower a == fmap toLower b
