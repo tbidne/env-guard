@@ -1,4 +1,3 @@
-{-# LANGUAGE ImportQualifiedPost #-}
 {-# LANGUAGE LambdaCase #-}
 
 -- | "System.Environment.Guard.Lifted" for 'MonadIO'.
