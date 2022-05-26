@@ -11,15 +11,11 @@ main = do
     Just _ -> doctest args
     _ -> putStrLn "*** Doctests Disabled ***"
   where
-    args = files <> exts
+    args = files
 
 files :: [String]
 files =
   [ "-isrc",
-    "src/System/Environment/Guard.hs"
-  ]
-
-exts :: [String]
-exts =
-  [ "-XLambdaCase"
+    "src/System/Environment/Guard.hs",
+    "src/System/Environment/Guard/Lifted.hs"
   ]
