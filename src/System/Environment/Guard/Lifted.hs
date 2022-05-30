@@ -1,6 +1,6 @@
 {-# LANGUAGE LambdaCase #-}
 
--- | "System.Environment.Guard.Lifted" for 'MonadIO'.
+-- | "System.Environment.Guard" for 'MonadIO'.
 --
 -- @since 0.1
 module System.Environment.Guard.Lifted
