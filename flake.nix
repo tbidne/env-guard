@@ -20,11 +20,9 @@
           modifier = drv:
             pkgs.haskell.lib.addBuildTools drv (with compiler; [
               cabal-install
-              cabal-plan
               haskell-language-server
-              hlint
               ghcid
-              ormolu
+              pkgs.gnumake
               pkgs.zlib
             ]);
         };
