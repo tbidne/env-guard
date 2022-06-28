@@ -2,7 +2,7 @@
 
 # env-guard
 
-[![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/tbidne/env-guard?include_prereleases&sort=semver)](https://github.com/tbidne/env-guard/releases/)
+[![Hackage](https://img.shields.io/hackage/v/env-guard)](https://hackage.haskell.org/package/env-guard)
 [![MIT](https://img.shields.io/github/license/tbidne/env-guard?color=blue)](https://opensource.org/licenses/MIT)
 
 [![nix](https://img.shields.io/github/workflow/status/tbidne/env-guard/nix/main?label=nix%209.2.2&&logo=nixos&logoColor=85c5e7&labelColor=2f353c)](https://github.com/tbidne/env-guard/actions/workflows/nix_ci.yaml)
