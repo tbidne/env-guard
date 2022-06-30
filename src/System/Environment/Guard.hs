@@ -1,4 +1,4 @@
-{-# LANGUAGE LambdaCase #-}
+{-# LANGUAGE ImportQualifiedPost #-}
 
 -- | Functions for conditionally running 'IO' actions based on an environment
 -- variable.
@@ -19,9 +19,7 @@ module System.Environment.Guard
   )
 where
 
-import Control.Monad (void)
-import Data.Char (toLower)
-import System.Environment (lookupEnv)
+import System.Environment.Guard.Lifted qualified as Lifted
 
 -- $setup
 -- >>> import Data.Functor (($>))
@@ -47,13 +45,13 @@ import System.Environment (lookupEnv)
 --
 -- @since 0.1
 guardSet :: String -> IO a -> IO (Maybe a)
-guardSet var = guardPredicate var (const True)
+guardSet = Lifted.guardSet
 
 -- | Variant of 'guardSet' that ignores the return value.
 --
 -- @since 0.1
 guardSet_ :: String -> IO a -> IO ()
-guardSet_ var = void . guardSet var
+guardSet_ = Lifted.guardSet_
 
 -- | @'guardExpected' var expected io@ runs @io@ iff
 --
@@ -80,19 +78,19 @@ guardSet_ var = void . guardSet var
 --
 -- @since 0.1
 guardExpected :: String -> String -> IO a -> IO (Maybe a)
-guardExpected var expected = guardPredicate var (eqCaseInsensitive expected)
+guardExpected = Lifted.guardExpected
 
 -- | Variant of 'guardExpected_' that ignores the return value.
 --
 -- @since 0.1
 guardExpected_ :: String -> String -> IO a -> IO ()
-guardExpected_ var expected = void . guardExpected var expected
+guardExpected_ = Lifted.guardExpected_
 
 -- | Variant of 'guardPredicate' that ignores the return value.
 --
 -- @since 0.1
 guardPredicate_ :: String -> (String -> Bool) -> IO a -> IO ()
-guardPredicate_ var p = void . guardPredicate var p
+guardPredicate_ = Lifted.guardPredicate_
 
 -- | This is the most general way to check an environment variable.
 -- @'guardPredicate' var p io@ runs @io@ iff
@@ -116,11 +114,4 @@ guardPredicate_ var p = void . guardPredicate var p
 --
 -- @since 0.1
 guardPredicate :: String -> (String -> Bool) -> IO a -> IO (Maybe a)
-guardPredicate var p io =
-  lookupEnv var
-    >>= \case
-      Just result | p result -> Just <$> io
-      _ -> pure Nothing
-
-eqCaseInsensitive :: String -> String -> Bool
-eqCaseInsensitive a b = fmap toLower a == fmap toLower b
+guardPredicate = Lifted.guardPredicate
