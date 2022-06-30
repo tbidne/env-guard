@@ -5,25 +5,116 @@
 --
 -- @since 0.1
 module System.Environment.Guard
-  ( -- * Checking environment variable is set
+  ( -- * High level combinators
+    ExpectEnv (..),
+    withGuard,
+    withGuard_,
+    guardOrElse,
+    guardOrElse',
+
+    -- * Low level functions
+
+    -- ** Checking environment variable is set
     guardSet,
     guardSet_,
 
-    -- * Checking environment variable match
+    -- ** Checking environment variable match
     guardExpected,
     guardExpected_,
 
-    -- * Checking environment variable predicate
+    -- ** Checking environment variable predicate
     guardPredicate,
     guardPredicate_,
   )
 where
 
+import System.Environment.Guard.Lifted (ExpectEnv)
 import System.Environment.Guard.Lifted qualified as Lifted
 
 -- $setup
+-- >>> import Control.Monad (void)
 -- >>> import Data.Functor (($>))
 -- >>> import System.Environment (setEnv)
+-- >>> import System.Environment.Guard.Lifted (ExpectEnv (..))
+
+-- | Guards an action behind an environment variable according to
+-- the given expectation.
+--
+-- ==== __Examples__
+-- >>> setEnv "FOO" "bar"
+-- >>> withGuard "FOO" (ExpectEnvEquals "baz") (putStrLn "succeeded")
+-- Nothing
+--
+-- >>> withGuard "FOO" ExpectEnvSet (putStrLn "succeeded")
+-- succeeded
+-- Just ()
+--
+-- @since 0.1.1
+withGuard :: String -> ExpectEnv -> IO a -> IO (Maybe a)
+withGuard = Lifted.withGuard
+
+-- | Variant of 'withGuard' that ignores the return value.
+--
+-- @since 0.1.1
+withGuard_ :: String -> ExpectEnv -> IO a -> IO ()
+withGuard_ = Lifted.withGuard_
+
+-- | @guardOrElse var expect io1 io2@ is equivalent to
+-- @withGuard var expect io1@ except that it runs @io2@ if @io1@ is not run.
+--
+-- ==== __Examples__
+-- >>> setEnv "FOO" "bar"
+-- >>> guardOrElse "FOO" ExpectEnvSet (pure True) (pure "not found")
+-- Right True
+--
+-- >>> guardOrElse "BAR" ExpectEnvSet (pure True) (pure "not found")
+-- Left "not found"
+--
+-- @since 0.1.1
+guardOrElse ::
+  -- | The environment variable.
+  String ->
+  -- | The expectation.
+  ExpectEnv ->
+  -- | The action to run if the expectation succeeds.
+  IO a ->
+  -- | The action to run if the expectation fails.
+  IO e ->
+  -- | The result.
+  IO (Either e a)
+guardOrElse = Lifted.guardOrElse
+
+-- | 'guardOrElse' specialized to the same type so that we always return an
+-- @a@. This can also be used to ignore the return value i.e.
+--
+-- @
+-- guardOrElse' var expect (void io1) io2
+-- @
+--
+-- ==== __Examples__
+-- >>> setEnv "FOO" "bar"
+-- >>> guardOrElse' "FOO" ExpectEnvSet (pure True) (pure False)
+-- True
+--
+-- >>> guardOrElse' "BAR" ExpectEnvSet (pure True) (pure False)
+-- False
+--
+-- >>> guardOrElse' "BAR" ExpectEnvSet (void $ pure True) (putStrLn "not found")
+-- not found
+--
+-- @since 0.1.1
+guardOrElse' ::
+  -- | The environment variable.
+  String ->
+  -- | The expectation.
+  ExpectEnv ->
+  -- | The action to run if the expectation succeeds.
+  IO a ->
+  -- | The action to run if the expectation fails.
+  IO a ->
+  -- | The result.
+  IO a
+guardOrElse' = Lifted.guardOrElse'
 
 -- | @'guardSet' var io@ runs @io@ iff
 --
@@ -59,7 +150,7 @@ guardSet_ = Lifted.guardSet_
 -- 2. @var@'s value equals @expected@. This is __case-insensitive__.
 --
 -- @
--- 'guardExpected' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'toLower' a == 'fmap' 'toLower' b)
+-- 'guardExpected' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'Data.Char.toLower' a == 'fmap' 'Data.Char.toLower' b)
 -- @
 --
 -- ==== __Examples__
