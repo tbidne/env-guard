@@ -79,7 +79,7 @@ haddock:
 	cabal haddock --haddock-hyperlink-source --haddock-quickjump ;\
 	mkdir -p docs/ ;\
 	find docs/ -type f | xargs -I % sh -c "rm -r %" ;\
-	cp -r dist-newstyle/build/x86_64-linux/ghc-9.2.3/env-guard-0.1.1/opt/doc/html/env-guard/* docs/
+	cp -r dist-newstyle/build/x86_64-linux/ghc-9.2.3/env-guard-0.2/opt/doc/html/env-guard/* docs/
 
 .PHONY: haddockc
 haddockc:
