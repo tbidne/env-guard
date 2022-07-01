@@ -19,8 +19,8 @@ module System.Environment.Guard
     guardSet_,
 
     -- ** Checking environment variable match
-    guardExpected,
-    guardExpected_,
+    guardEquals,
+    guardEquals_,
 
     -- ** Checking environment variable predicate
     guardPredicate,
@@ -144,38 +144,38 @@ guardSet = Lifted.guardSet
 guardSet_ :: String -> IO a -> IO ()
 guardSet_ = Lifted.guardSet_
 
--- | @'guardExpected' var expected io@ runs @io@ iff
+-- | @'guardEquals' var expected io@ runs @io@ iff
 --
 -- 1. The environment variable @var@ is set.
 -- 2. @var@'s value equals @expected@. This is __case-insensitive__.
 --
 -- @
--- 'guardExpected' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'Data.Char.toLower' a == 'fmap' 'Data.Char.toLower' b)
+-- 'guardEquals' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'Data.Char.toLower' a == 'fmap' 'Data.Char.toLower' b)
 -- @
 --
 -- ==== __Examples__
 --
--- >>> guardExpected "NOT_SET" "val" (putStrLn "ran io" $> True)
+-- >>> guardEquals "NOT_SET" "val" (putStrLn "ran io" $> True)
 -- Nothing
 --
 -- >>> setEnv "WRONG_VAL" "good_val"
--- >>> guardExpected "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
+-- >>> guardEquals "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
 -- Nothing
 --
 -- >>> setEnv "WILL_RUN" "val"
--- >>> guardExpected "WILL_RUN" "VAL" (putStrLn "ran io" $> True)
+-- >>> guardEquals "WILL_RUN" "VAL" (putStrLn "ran io" $> True)
 -- ran io
 -- Just True
 --
--- @since 0.1
-guardExpected :: String -> String -> IO a -> IO (Maybe a)
-guardExpected = Lifted.guardExpected
+-- @since 0.2
+guardEquals :: String -> String -> IO a -> IO (Maybe a)
+guardEquals = Lifted.guardEquals
 
--- | Variant of 'guardExpected_' that ignores the return value.
+-- | Variant of 'guardEquals_' that ignores the return value.
 --
--- @since 0.1
-guardExpected_ :: String -> String -> IO a -> IO ()
-guardExpected_ = Lifted.guardExpected_
+-- @since 0.2
+guardEquals_ :: String -> String -> IO a -> IO ()
+guardEquals_ = Lifted.guardEquals_
 
 -- | Variant of 'guardPredicate' that ignores the return value.
 --

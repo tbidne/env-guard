@@ -18,8 +18,8 @@ module System.Environment.Guard.Lifted
     guardSet_,
 
     -- ** Checking environment variable match
-    guardExpected,
-    guardExpected_,
+    guardEquals,
+    guardEquals_,
 
     -- ** Checking environment variable predicate
     guardPredicate,
@@ -85,7 +85,7 @@ withGuard :: MonadIO m => String -> ExpectEnv -> m a -> m (Maybe a)
 withGuard var expect m =
   case expect of
     ExpectEnvSet -> guardSet var m
-    ExpectEnvEquals str -> guardExpected var str m
+    ExpectEnvEquals str -> guardEquals var str m
     ExpectEnvPredicate p -> guardPredicate var p m
 
 -- | Variant of 'withGuard' that ignores the return value.
@@ -185,38 +185,38 @@ guardSet var = guardPredicate var (const True)
 guardSet_ :: MonadIO m => String -> m a -> m ()
 guardSet_ var = void . guardSet var
 
--- | @'guardExpected' var expected io@ runs @io@ iff
+-- | @'guardEquals' var expected io@ runs @io@ iff
 --
 -- 1. The environment variable @var@ is set.
 -- 2. @var@'s value equals @expected@. This is __case-insensitive__.
 --
 -- @
--- 'guardExpected' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'toLower' a == 'fmap' 'toLower' b)
+-- 'guardEquals' var expected === 'guardPredicate' var (\\a b -> 'fmap' 'toLower' a == 'fmap' 'toLower' b)
 -- @
 --
 -- ==== __Examples__
 --
--- >>> guardExpected "NOT_SET" "val" (putStrLn "ran io" $> True)
+-- >>> guardEquals "NOT_SET" "val" (putStrLn "ran io" $> True)
 -- Nothing
 --
 -- >>> setEnv "WRONG_VAL" "good_val"
--- >>> guardExpected "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
+-- >>> guardEquals "WRONG_VAL" "bad_val" (putStrLn "ran io" $> True)
 -- Nothing
 --
 -- >>> setEnv "WILL_RUN" "val"
--- >>> guardExpected "WILL_RUN" "VAL" (putStrLn "ran io" $> True)
+-- >>> guardEquals "WILL_RUN" "VAL" (putStrLn "ran io" $> True)
 -- ran io
 -- Just True
 --
--- @since 0.1
-guardExpected :: MonadIO m => String -> String -> m a -> m (Maybe a)
-guardExpected var expected = guardPredicate var (eqCaseInsensitive expected)
+-- @since 0.2
+guardEquals :: MonadIO m => String -> String -> m a -> m (Maybe a)
+guardEquals var expected = guardPredicate var (eqCaseInsensitive expected)
 
--- | Variant of 'guardExpected_' that ignores the return value.
+-- | Variant of 'guardEquals_' that ignores the return value.
 --
--- @since 0.1
-guardExpected_ :: MonadIO m => String -> String -> m a -> m ()
-guardExpected_ var expected = void . guardExpected var expected
+-- @since 0.2
+guardEquals_ :: MonadIO m => String -> String -> m a -> m ()
+guardEquals_ var expected = void . guardEquals var expected
 
 -- | Variant of 'guardPredicate' that ignores the return value.
 --
