@@ -4,6 +4,10 @@
 build:
 	cabal build all
 
+.PHONY: clean
+clean:
+	cabal clean
+
 .PHONY: test
 test:
 	RUN_DOCTEST=1 cabal test
@@ -81,3 +85,8 @@ haddock:
 haddockc:
 # threshold dropped to 95 because on reexport (TimeLocale) does not have any haddocks.
 	nix run github:tbidne/nix-hs-tools/0.6#haddock-cov -- . -t 95
+
+.PHONY: hackage
+hackage:
+	cabal sdist ;\
+	cabal haddock --haddock-for-hackage --enable-doc
