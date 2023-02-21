@@ -21,12 +21,20 @@
         pkgs.zlib
       ];
       devTools = c: with c; [
-        ghcid
-        haskell-language-server
+        (pkgs.haskell.lib.dontCheck ghcid)
+        (hlib.overrideCabal haskell-language-server (old: {
+          configureFlags = (old.configureFlags or [ ]) ++
+            [
+              "-f -brittany"
+              "-f -floskell"
+              "-f -fourmolu"
+              "-f -stylishhaskell"
+            ];
+        }))
       ];
       ghc-version = "ghc924";
       compiler = pkgs.haskell.packages."${ghc-version}";
-      mkPkg = returnShellEnv: withDevTools:
+      mkPkg = returnShellEnv:
         compiler.developPackage {
           inherit returnShellEnv;
           name = "env-guard";
@@ -34,13 +42,11 @@
           modifier = drv:
             pkgs.haskell.lib.addBuildTools drv
               (buildTools compiler ++
-                (if withDevTools then devTools compiler else [ ]));
+                (if returnShellEnv then devTools compiler else [ ]));
         };
     in
     {
-      packages.default = mkPkg false false;
-
-      devShells.default = mkPkg true true;
-      devShells.ci = mkPkg true false;
+      packages.default = mkPkg false;
+      devShells.default = mkPkg true;
     });
 }

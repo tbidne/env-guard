@@ -1,105 +1,61 @@
+.PHONY: build clean repl watch ;\
+	test unit integration functional ;\
+	cic ci formatc format lint lintc ;\
+	haddock hackage
+
 # core
 
-ARGS = ""
+T = ""
 
-.PHONY: build
 build:
-	if [ -z "$(ARGS)" ]; then \
+	if [ -z "$(T)" ]; then \
 		cabal build; \
 	else \
-		cabal build $(ARGS); \
+		cabal build $(T); \
 	fi
 
-.PHONY: clean
-clean:
-	cabal clean
-
-.PHONY: test
-test:
-	if [ -z "$(ARGS)" ]; then \
-		RUN_DOCTEST=1 cabal test; \
-	else \
-		RUN_DOCTEST=1 cabal test $(ARGS); \
-	fi
-
-.PHONY: doctest
-doctest:
-	RUN_DOCTEST=1 cabal test doctest
-
-.PHONY: repl
 repl:
-	if [ -z "$(ARGS)" ]; then \
+	if [ -z "$(T)" ]; then \
 		cabal repl; \
 	else \
-		cabal repl $(ARGS); \
+		cabal repl $(T); \
 	fi
 
-.PHONY: watch
 watch:
-	ghcid --command "cabal repl $(ARGS)"
+	ghcid --command "cabal repl $(T)"
 
 # ci
 
-.PHONY: cic
-cic: formatc lintc haddockc
+cic: formatc lintc
 
-.PHONY: ci
 ci: lint format
 
 # formatting
 
-.PHONY: formatc
-formatc: cabalfmtc hsformatc nixpkgsfmtc
+formatc:
+	nix run github:tbidne/nix-hs-tools/0.8#nixpkgs-fmt -- --check ;\
+	nix run github:tbidne/nix-hs-tools/0.8#cabal-fmt -- --check ;\
+	nix run github:tbidne/nix-hs-tools/0.8#ormolu -- --mode check
 
-.PHONY: format
-format: cabalfmt hsformat nixpkgsfmt
-
-.PHONY: hsformat
-hsformat:
-	nix run github:tbidne/nix-hs-tools/0.6.1#ormolu -- --mode inplace
-
-.PHONY: hsformatc
-hsformatc:
-	nix run github:tbidne/nix-hs-tools/0.6.1#ormolu -- --mode check
-
-.PHONY: cabalfmt
-cabalfmt:
-	nix run github:tbidne/nix-hs-tools/0.6.1#cabal-fmt -- --inplace
-
-.PHONY: cabalfmtc
-cabalfmtc:
-	nix run github:tbidne/nix-hs-tools/0.6.1#cabal-fmt -- --check
-
-.PHONY: nixpkgsfmt
-nixpkgsfmt:
-	nix run github:tbidne/nix-hs-tools/0.6.1#nixpkgs-fmt
-
-.PHONY: nixpkgsfmtc
-nixpkgsfmtc:
-	nix run github:tbidne/nix-hs-tools/0.6.1#nixpkgs-fmt -- --check
+format:
+	nix run github:tbidne/nix-hs-tools/0.8#nixpkgs-fmt ;\
+	nix run github:tbidne/nix-hs-tools/0.8#cabal-fmt -- --inplace ;\
+	nix run github:tbidne/nix-hs-tools/0.8#ormolu -- --mode inplace
 
 # linting
 
-.PHONY: lint
 lint:
-	nix run github:tbidne/nix-hs-tools/0.6.1#hlint -- --refact
+	nix run github:tbidne/nix-hs-tools/0.8#hlint -- --refact
 
-.PHONY: lintc
 lintc:
-	nix run github:tbidne/nix-hs-tools/0.6.1#hlint
+	nix run github:tbidne/nix-hs-tools/0.8#hlint
 
-.PHONY: haddock
 haddock:
 	cabal haddock --haddock-hyperlink-source --haddock-quickjump ;\
 	mkdir -p docs/ ;\
 	find docs/ -type f | xargs -I % sh -c "rm -r %" ;\
 	cp -r dist-newstyle/build/x86_64-linux/ghc-9.2.3/env-guard-0.2/opt/doc/html/env-guard/* docs/
 
-.PHONY: haddockc
-haddockc:
-	nix run github:tbidne/nix-hs-tools/0.6.1#haddock-cov
-
-.PHONY: hackage
 hackage:
 	cabal sdist ;\
 	cabal haddock --haddock-for-hackage --enable-doc

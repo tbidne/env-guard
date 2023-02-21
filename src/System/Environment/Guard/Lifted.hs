@@ -81,7 +81,7 @@ instance Show ExpectEnv where
 -- Just ()
 --
 -- @since 0.1.1
-withGuard :: MonadIO m => String -> ExpectEnv -> m a -> m (Maybe a)
+withGuard :: (MonadIO m) => String -> ExpectEnv -> m a -> m (Maybe a)
 withGuard var expect m =
   case expect of
     ExpectEnvSet -> guardSet var m
@@ -91,7 +91,7 @@ withGuard var expect m =
 -- | Variant of 'withGuard' that ignores the return value.
 --
 -- @since 0.1.1
-withGuard_ :: MonadIO m => String -> ExpectEnv -> m a -> m ()
+withGuard_ :: (MonadIO m) => String -> ExpectEnv -> m a -> m ()
 withGuard_ var expect = void . withGuard var expect
 
 -- | @guardOrElse var expect m1 m2@ is equivalent to
@@ -107,7 +107,7 @@ withGuard_ var expect = void . withGuard var expect
 --
 -- @since 0.1.1
 guardOrElse ::
-  MonadIO m =>
+  (MonadIO m) =>
   -- | The environment variable.
   String ->
   -- | The expectation.
@@ -144,7 +144,7 @@ guardOrElse var expect m1 m2 =
 --
 -- @since 0.1.1
 guardOrElse' ::
-  MonadIO m =>
+  (MonadIO m) =>
   -- | The environment variable.
   String ->
   -- | The expectation.
@@ -176,13 +176,13 @@ guardOrElse' var expect m = fmap (either id id) . guardOrElse var expect m
 -- Just True
 --
 -- @since 0.1
-guardSet :: MonadIO m => String -> m a -> m (Maybe a)
+guardSet :: (MonadIO m) => String -> m a -> m (Maybe a)
 guardSet var = guardPredicate var (const True)
 
 -- | Variant of 'guardSet' that ignores the return value.
 --
 -- @since 0.1
-guardSet_ :: MonadIO m => String -> m a -> m ()
+guardSet_ :: (MonadIO m) => String -> m a -> m ()
 guardSet_ var = void . guardSet var
 
 -- | @'guardEquals' var expected io@ runs @io@ iff
@@ -209,19 +209,19 @@ guardSet_ var = void . guardSet var
 -- Just True
 --
 -- @since 0.2
-guardEquals :: MonadIO m => String -> String -> m a -> m (Maybe a)
+guardEquals :: (MonadIO m) => String -> String -> m a -> m (Maybe a)
 guardEquals var expected = guardPredicate var (eqCaseInsensitive expected)
 
 -- | Variant of 'guardEquals_' that ignores the return value.
 --
 -- @since 0.2
-guardEquals_ :: MonadIO m => String -> String -> m a -> m ()
+guardEquals_ :: (MonadIO m) => String -> String -> m a -> m ()
 guardEquals_ var expected = void . guardEquals var expected
 
 -- | Variant of 'guardPredicate' that ignores the return value.
 --
 -- @since 0.1
-guardPredicate_ :: MonadIO m => String -> (String -> Bool) -> m a -> m ()
+guardPredicate_ :: (MonadIO m) => String -> (String -> Bool) -> m a -> m ()
 guardPredicate_ var p = void . guardPredicate var p
 
 -- | This is the most general way to check an environment variable.
@@ -245,7 +245,7 @@ guardPredicate_ var p = void . guardPredicate var p
 -- Just True
 --
 -- @since 0.1
-guardPredicate :: MonadIO m => String -> (String -> Bool) -> m a -> m (Maybe a)
+guardPredicate :: (MonadIO m) => String -> (String -> Bool) -> m a -> m (Maybe a)
 guardPredicate var p io =
   liftIO (lookupEnv var)
     >>= \case
