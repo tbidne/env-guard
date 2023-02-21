@@ -21,7 +21,7 @@
             pkgs.zlib
           ];
           devTools = c: with c; [
-            (pkgs.haskell.lib.dontCheck ghcid)
+            (hlib.dontCheck ghcid)
             (hlib.overrideCabal haskell-language-server (old: {
               configureFlags = (old.configureFlags or [ ]) ++
                 [
@@ -34,6 +34,7 @@
           ];
           ghc-version = "ghc944";
           compiler = pkgs.haskell.packages."${ghc-version}";
+          hlib = pkgs.haskell.lib;
           mkPkg = returnShellEnv:
             compiler.developPackage {
               inherit returnShellEnv;
