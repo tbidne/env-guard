@@ -3,12 +3,8 @@
 # env-guard
 
 [![Hackage](https://img.shields.io/hackage/v/env-guard)](https://hackage.haskell.org/package/env-guard)
-![haskell](https://img.shields.io/static/v1?label=&message=9.6&logo=haskell&logoColor=655889&labelColor=2f353e&color=655889)
+[![ci](http://img.shields.io/github/actions/workflow/status/tbidne/env-guard/ci.yaml?branch=main)](https://github.com/tbidne/env-guard/actions/workflows/ci.yaml)
 [![MIT](https://img.shields.io/github/license/tbidne/env-guard?color=blue)](https://opensource.org/licenses/MIT)
-
-[![nix](http://img.shields.io/github/actions/workflow/status/tbidne/env-guard/nix.yaml?branch=main&label=nix&logo=nixos&logoColor=85c5e7&labelColor=2f353c)](https://github.com/tbidne/env-guard/actions/workflows/nix.yaml)
-[![cabal](http://img.shields.io/github/actions/workflow/status/tbidne/env-guard/cabal.yaml?branch=main&label=cabal&labelColor=2f353c)](https://github.com/tbidne/env-guard/actions/workflows/cabal.yaml)
-[![style](http://img.shields.io/github/actions/workflow/status/tbidne/env-guard/style.yaml?branch=main&label=style&logoColor=white&labelColor=2f353c)](https://github.com/tbidne/env-guard/actions/workflows/style.yaml)
 
 </div>
 
