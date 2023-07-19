@@ -30,6 +30,7 @@ where
 import Control.Monad (void)
 import Control.Monad.IO.Class (MonadIO (..))
 import Data.Char (toLower)
+import GHC.Show (appPrec)
 import System.Environment (lookupEnv)
 
 -- $setup
@@ -61,12 +62,12 @@ instance Show ExpectEnv where
   showsPrec _ ExpectEnvSet = showString "ExpectEnvSet"
   showsPrec i (ExpectEnvEquals s) =
     showParen
-      (i >= 11)
-      (showString "ExpectEnvEquals " . showsPrec 11 s)
+      (i >= appPrec)
+      (showString "ExpectEnvEquals " . showsPrec appPrec s)
   showsPrec i (ExpectEnvPredicate _) =
     showParen
-      (i >= 11)
-      (showString "ExpectEnvEquals " . showString "_")
+      (i >= appPrec)
+      (showString "ExpectEnvPredicate " . showString "<function>")
 
 -- | Guards an action behind an environment variable according to
 -- the given expectation.

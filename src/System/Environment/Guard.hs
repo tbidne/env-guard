@@ -28,7 +28,7 @@ module System.Environment.Guard
   )
 where
 
-import System.Environment.Guard.Lifted (ExpectEnv)
+import System.Environment.Guard.Lifted (ExpectEnv (..))
 import System.Environment.Guard.Lifted qualified as Lifted
 
 -- $setup
