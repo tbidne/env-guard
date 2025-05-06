@@ -10,6 +10,8 @@ and this project adheres to the [Haskell Package Versioning Policy](https://pvp.
 * Fixed `Show ExpectEnv` instance constructor name.
 * Explicitly Re-export `ExpectEnv` data constructors from
   `System.Environment.Guard`.
+* Doctests use cabal external command, hence no longer part of test suite.
+  Therefore `--enable-tests` will no longer incur a GHC dependency.
 
 ## [0.2] -- 2022-07-02
 ### Changed
