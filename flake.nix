@@ -12,36 +12,41 @@
     flake-parts.lib.mkFlake { inherit inputs; } {
       perSystem = { pkgs, ... }:
         let
-          ghc-version = "ghc962";
+          ghc-version = "ghc9102";
           compiler = pkgs.haskell.packages."${ghc-version}".override {
             overrides = final: prev: {
-              hedgehog = prev.hedgehog_1_3;
-              hlint = prev.hlint_3_6_1;
-              ormolu = prev.ormolu_0_7_1_0;
+              #hedgehog = prev.hedgehog_1_3;
+              #hlint = prev.hlint_3_6_1;
+              #rmolu = prev.ormolu_0_7_1_0;
             };
+          };
+          hlib = pkgs.haskell.lib;
+          compilerPkgs = {
+            inherit compiler pkgs;
           };
           mkPkg = returnShellEnv:
             nix-hs-utils.mkHaskellPkg {
               inherit compiler pkgs returnShellEnv;
               name = "env-guard";
               root = ./.;
+
+              # TODO: Once hlint is back to working with our GHC we can
+              # use nix-hs-utils.mkDevTools ++ otherDeps.
+              devTools = [
+                (hlib.dontCheck compiler.cabal-fmt)
+                (hlib.dontCheck compiler.haskell-language-server)
+                pkgs.nixfmt-rfc-style
+              ];
             };
-          hsDirs = "src test";
         in
         {
           packages.default = mkPkg false;
           devShells.default = mkPkg true;
 
           apps = {
-            format = nix-hs-utils.format {
-              inherit compiler hsDirs pkgs;
-            };
-            lint = nix-hs-utils.lint {
-              inherit compiler hsDirs pkgs;
-            };
-            lint-refactor = nix-hs-utils.lint-refactor {
-              inherit compiler hsDirs pkgs;
-            };
+            format = nix-hs-utils.format compilerPkgs;
+            #lint = nix-hs-utils.lint compilerPkgs;
+            #lint-refactor = nix-hs-utils.lint-refactor compilerPkgs;
           };
         };
       systems = [
