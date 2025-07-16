@@ -28,7 +28,7 @@ module System.Environment.Guard.Lifted
 where
 
 import Control.Monad (void)
-import Control.Monad.IO.Class (MonadIO (..))
+import Control.Monad.IO.Class (MonadIO (liftIO))
 import Data.Char (toLower)
 import GHC.Show (appPrec)
 import System.Environment (lookupEnv)

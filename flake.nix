@@ -4,13 +4,15 @@
   inputs.nix-hs-utils.url = "github:tbidne/nix-hs-utils";
   inputs.nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
   outputs =
-    inputs@{ flake-parts
-    , nix-hs-utils
-    , nixpkgs
-    , self
+    inputs@{
+      flake-parts,
+      nix-hs-utils,
+      nixpkgs,
+      self,
     }:
     flake-parts.lib.mkFlake { inherit inputs; } {
-      perSystem = { pkgs, ... }:
+      perSystem =
+        { pkgs, ... }:
         let
           ghc-version = "ghc9102";
           compiler = pkgs.haskell.packages."${ghc-version}".override {
@@ -24,7 +26,8 @@
           compilerPkgs = {
             inherit compiler pkgs;
           };
-          mkPkg = returnShellEnv:
+          mkPkg =
+            returnShellEnv:
             nix-hs-utils.mkHaskellPkg {
               inherit compiler pkgs returnShellEnv;
               name = "env-guard";
