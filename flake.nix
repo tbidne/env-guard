@@ -15,13 +15,7 @@
         { pkgs, ... }:
         let
           ghc-version = "ghc9102";
-          compiler = pkgs.haskell.packages."${ghc-version}".override {
-            overrides = final: prev: {
-              #hedgehog = prev.hedgehog_1_3;
-              #hlint = prev.hlint_3_6_1;
-              #rmolu = prev.ormolu_0_7_1_0;
-            };
-          };
+          compiler = pkgs.haskell.packages."${ghc-version}";
           hlib = pkgs.haskell.lib;
           compilerPkgs = {
             inherit compiler pkgs;
